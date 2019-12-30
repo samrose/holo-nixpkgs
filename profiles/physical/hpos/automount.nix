@@ -1,5 +1,7 @@
+{ pkgs, ... }:
+
 {
-  environment.systemPackages = [ udevil ];
+  environment.systemPackages = [ pkgs.udevil ];
 
   services.devmon.enable = true;
 }
