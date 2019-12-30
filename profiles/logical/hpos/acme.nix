@@ -3,12 +3,13 @@
 with pkgs;
 
 let
-  holo-router-acme = writeShellScriptBin "holo-router-acme" ''
-    base36_id=$(${hpos-config-into-base36-id}/bin/hpos-config-into-base36-id < "$HPOS_CONFIG_PATH")
-    exec ${simp_le}/bin/simp_le \
-      --default_root ${config.security.acme.certs.default.webroot} \
-      --valid_min ${toString config.security.acme.validMin} \
-      -d "$base36_id.holohost.net" \
+  acme-cfg = config.security.acme.certs;
+
+  acme-holo-router = writeShellScriptBin "acme-holo-router" ''
+    exec simp_le \
+      --default_root ${acme-cfg.holo-router.webroot} \
+      --valid_min ${acme-cfg.validMin} \
+      -d "$(hpos-config-into-base36-id < $HPOS_CONFIG_PATH).holohost.net" \
       -f fullchain.pem \
       -f full.pem \
       -f key.pem \
@@ -94,6 +95,7 @@ in
     enable = true;
 
     virtualHosts.default = {
+      serverName = "localhost";
       enableACME = true;
       onlySSL = true;
       locations = {
@@ -206,8 +208,23 @@ in
     dates = "*:0/10";
   };
 
-  systemd.services.acme-default.serviceConfig.ExecStart =
-    lib.mkForce "${holo-router-acme}/bin/holo-router-acme";
+  systemd.services.acme-localhost = {
+    path = with pkgs; [ hpos-config-into-base36-id simp_le ];
+
+    serviceConfig.ExecStart = lib.mkForce
+    script = lib.mkForce ''
+      exec simp_le \
+        --default_root /var/lib/acme/acme-challenge \
+        --valid_min 2592000 \
+        -d "$(hpos-config-into-base36-id < $HPOS_CONFIG_PATH)" \
+        -f fullchain.pem \
+        -f full.pem \
+        -f key.pem \
+        -f account_key.json \
+        -f account_reg.json \
+        -v
+    '';
+  };
 
   system.stateVersion = "19.09";
 

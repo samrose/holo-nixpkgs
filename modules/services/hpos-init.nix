@@ -36,6 +36,12 @@ in
       };
     };
 
+    systemd.services.acme-default = {
+      after = [ "hpos-init.service" ];
+      requires = [ "hpos-init.service" ];
+      environment.HPOS_CONFIG_PATH = cfg.configPath;
+    };
+
     systemd.services.holo-auth-client = {
       after = [ "hpos-init.service" ];
       requires = [ "hpos-init.service" ];
