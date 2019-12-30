@@ -16,6 +16,7 @@ stdenvNoCC.mkDerivation {
     ./rust-aarch64-musl-cross.diff
     ./rust-home.diff
     ./virtualbox-image-no-audio-mouse-usb.diff
+    ./zerotier-1.4.6.patch
   ];
 
   phases = [ "unpackPhase" "patchPhase" "installPhase" ];
