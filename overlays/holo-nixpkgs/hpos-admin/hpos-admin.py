@@ -25,7 +25,7 @@ def rebuild(priority, args):
 
 
 def get_state_path():
-    return os.getenv('HPOS_STATE_PATH')
+    return os.getenv('HPOS_CONFIG_PATH')
 
 
 def get_state_data():
@@ -39,8 +39,8 @@ def cas_hash(data):
 
 
 @app.route('/v1/config', methods=['GET'])
-def get_config():
-    return jsonify(get_state_data()['v1']['config'])
+def get_settings():
+    return jsonify(get_state_data()['v1']['settings'])
 
 
 def replace_file_contents(path, data):
@@ -51,16 +51,15 @@ def replace_file_contents(path, data):
 
 
 @app.route('/v1/config', methods=['PUT'])
-def put_config():
+def put_settings():
     with state_lock:
         state = get_state_data()
-        if request.headers.get('x-hpos-admin-cas') != cas_hash(state['v1']['config']):
+        if request.headers.get('x-hpos-admin-cas') != cas_hash(state['v1']['settings']):
             return '', 409
-        state['v1']['config'] = request.get_json(force=True)
+        state['v1']['settings'] = request.get_json(force=True)
         replace_file_contents(get_state_path(), json.dumps(state, indent=2))
     rebuild(priority=5, args=[])
     return '', 200
-
 
 
 def zerotier_info():

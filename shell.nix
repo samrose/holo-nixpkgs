@@ -10,13 +10,16 @@ mkShell {
   buildInputs = [ nixpkgs-fmt ];
 
   shellHook = ''
-    holoportos-shell() {
-      $(nix-build -I nixos-config=${root}/profiles/holoportos/$1 \
-        --attr holoportos.qemu \
-        --no-out-link)/bin/run-holoportos-vm
+    holo-nixpkgs-fmt() {
+      find ${root} -name \*.nix -exec nixpkgs-fmt {} +
     }
 
-    holoportos-switch() {
+    hpos-shell() {
+      drv=$(nix-build --attr hpos.qemu --no-out-link --show-trace)
+      [ -z "$drv" ] || "$drv/bin/run-hpos-vm"
+    }
+
+    hpos-switch() {
       sudo -E nixos-rebuild switch --fast -I nixos-config=/etc/nixos/configuration.nix
     }
   '';

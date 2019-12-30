@@ -19,13 +19,8 @@ in
   config = mkIf cfg.enable {
     systemd.services.hp-admin-crypto-server = {
       wantedBy = [ "multi-user.target" ];
-      path = [ pkgs.hpos-init ];
 
-      script = ''
-        HPOS_STATE_PATH=$(hpos-init) ${cfg.package}/bin/hp-admin-crypto-server
-      '';
-
-      serviceConfig.User = "root";
+      serviceConfig.ExecStart = "${cfg.package}/bin/hp-admin-crypto-server";
     };
   };
 }

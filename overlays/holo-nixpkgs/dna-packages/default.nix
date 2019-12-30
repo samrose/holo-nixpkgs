@@ -23,6 +23,13 @@ let
     sha256 = "0wf7133cam8s3m6hww5fk29343z2a0xf2qv764radx5pcr02lhs0";
   };
 
+  hylo-holo-dnas = fetchFromGitHub {
+    owner = "holochain";
+    repo = "hylo-holo-dnas";
+    rev = "b1d07d4669a7c0e317de2cf0034960fc094e19b1";
+    sha256 = "1hn1x16a7lxrp879vxg8imd5l7kkvg1pdqb9fr1v2jjcfdx7j943";
+  };
+
   servicelogger = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "servicelogger";
@@ -35,6 +42,8 @@ in
   inherit (callPackage happ-store {}) happ-store;
 
   inherit (callPackage holo-hosting-app {}) holo-hosting-app;
+
+  inherit (callPackage hylo-holo-dnas {}) hylo-holo-dnas;
 
   inherit (callPackage servicelogger {}) servicelogger;
 

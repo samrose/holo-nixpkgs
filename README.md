@@ -1,15 +1,8 @@
-# HoloPortOS
+# Holo Nixpkgs
 
-HoloportOS is an operating system based on [NixOS][nixos] that supports running
-[Holochain][holochain] applications, designed from the ground up to be
-consistent, verifiable, and auditable.
+Modules, packages and profiles that drive Holo, Holochain, and HoloPortOS.
 
-[holochain]: https://holochain.org
-[nixos]: https://nixos.org
-
-## Setup
-
-### Binary cache
+## Binary cache
 
 On NixOS, add the following to `/etc/nixos/configuration.nix` and rebuild:
 
@@ -40,29 +33,21 @@ For single-user installs (`nix-shell -p nix-info --run nix-info` prints
 Otherwise, for multi-user installs, Nix config file is in `/etc/nix/nix.conf`
 and changing it requires root access.
 
-### HoloPortOS
+## HoloPortOS
 
-#### HoloPort Nano
+HoloportOS is an operating system based on [NixOS][nixos] that supports running
+[Holochain][holochain] applications.
 
-Checkout this repo, switch to `master` branch, install [Nix][nix] and run
-`nix-build release.nix -A holoportos-installers.holoport-nano`.
+[holochain]: https://holochain.org
+[nixos]: https://nixos.org
 
-Burn the image to a microSD card with `sudo cp result/sd-image/*.img
-/dev/mmcblkX` (see `lsblk` on Linux and `diskutil list` on macOS for the exact
-device name).
+### QEMU
 
-Connect Ethernet cable to HoloPort Nano, insert the microSD card, and boot.
+If you have Nix installed, checkout the repo, enter `nix-shell` and then run
+`hpos-shell`. That will launch a HoloPortOS VM against current state of your
+local checkout, which is useful for iterative development.
 
-During installation, LED will blink with yellow color.
-
-Once LED turns green, installation is complete: eject the microSD card and
-reboot.
-
-If LED starts to blink with red, there was an error during installation.
-Connect over HDMI to see what's going on. To retry, reboot or type
-`holoportos-install` in console.
-
-#### VirtualBox
+### VirtualBox
 
 Download the latest HoloPortOS VirtualBox OVA:
 https://hydra.holo.host/job/holo-nixpkgs/master/holoportos.targets.virtualbox.x86_64-linux/latest/download-by-type/file/ova

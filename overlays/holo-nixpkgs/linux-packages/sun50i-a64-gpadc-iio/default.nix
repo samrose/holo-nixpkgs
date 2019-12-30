@@ -1,4 +1,4 @@
-{ stdenv, gitignoreSource, kernel }:
+{ stdenv, fetchFromGitHub, kernel }:
 
 with stdenv.lib;
 
@@ -8,8 +8,15 @@ in
 
 stdenv.mkDerivation (
   {
-    name = "sun50i-a64-gpadc-iio-${kernel.version}";
-    src = gitignoreSource ./.;
+    pname = "sun50i-a64-gpadc-iio";
+    version = kernel.version;
+
+    src = fetchFromGitHub {
+      owner = "Holo-Host";
+      repo = "sun50i-a64-gpadc-iio";
+      rev = "4db1d5b72f85968a527946a7837e8d3c9a771527";
+      sha256 = "0kwzrd1kf3gzidiag2vlsyxkmsbw7xkkkvxxhzmy0ypchdiv10lx";
+    };
 
     hardeningDisable = [ "pic" ];
 

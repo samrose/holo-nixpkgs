@@ -18,13 +18,11 @@ in
 
   config = mkIf cfg.enable {
     systemd.services.hpos-admin = {
-      environment.HPOS_STATE_PATH = "/etc/hpos-state.json";
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
 
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/hpos-admin";
-        User = "root"; # TODO: limit scope
       };
     };
   };

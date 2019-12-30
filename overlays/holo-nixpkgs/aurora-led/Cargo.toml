@@ -1,7 +1,0 @@
-[package]
-name = "aurora-led"
-version = "0.0.0"
-
-[dependencies]
-getopts = "0.2.19"
-serial = "0.4.0"

@@ -4,6 +4,13 @@ with final;
 with lib;
 
 let
+  aorura = fetchFromGitHub {
+    owner = "Holo-Host";
+    repo = "aorura";
+    rev = "2aef90935d6e965cf6ec02208f84e4b6f43221bd";
+    sha256 = "00d9c6f0hh553hgmw01lp5639kbqqyqsz66jz35pz8xahmyk5wmw";
+  };
+
   cargo-to-nix = fetchFromGitHub {
     owner = "transumption-unstable";
     repo = "cargo-to-nix";
@@ -12,7 +19,7 @@ let
   };
 
   chaperone = fetchFromGitHub {
-    owner = "holo-host";
+    owner = "Holo-Host";
     repo = "chaperone";
     rev = "2386e905dc60dbb2bff482b92d5fbeb418627931";
     sha256 = "02yxlqcgly3235pj6rb84px1my3ps3m5plk0nijazpiakndh2nxz";
@@ -25,18 +32,11 @@ let
     sha256 = "0jrh5ghisaqdd0vldbywags20m2cxpkbbk5jjjmwaw0gr8nhsafv";
   };
 
-  holo-envoy = fetchFromGitHub {
-    owner = "Holo-Host";
-    repo = "envoy";
-    rev = "52b0b34907474ef39f123c855ed6caae89b63396";
-    sha256 = "0648bmv33cmb53ppn3ph44v52yx19qd6nnjskgmkyk05xmgd391y";
-  };
-
   holo-router = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "holo-router";
-    rev = "69dc3a0fe42ff4df1777766afa390594da20f7f4";
-    sha256 = "10i7nlhk6azshxl95dq3c9q083mrk7k6crl49y72dqp5mjpik67k";
+    rev = "f6c5be74307b29689d1d2bb939c9c5ca44c6ca91";
+    sha256 = "0j9fpm51wr0lb22g7qsilmasb4gi21yyqscdgp3szk9bb5q83alq";
   };
 
   holochain-rust = fetchFromGitHub {
@@ -56,15 +56,15 @@ let
   hp-admin-crypto = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "hp-admin-crypto";
-    rev = "1e9d8fad9382343153497ff2a673f62357dfa066";
-    sha256 = "0ssxra8i7kx7bp6mjs6rmi24qj3jf6zrqp4kz5x0sbqxah23742p";
+    rev = "690e3dbc7a49ecd31ab622b576001d93ce3de1ae";
+    sha256 = "01ji3ybx46gyi5y99vrf72yman3azjwkdzhf79rsa81bsy2jb664";
   };
 
-  hpos-state = fetchFromGitHub {
+  hpos-config = fetchFromGitHub {
     owner = "Holo-Host";
-    repo = "hpos-state";
-    rev = "62009eeb1fe9be9bb455d3a763acb31a71cf7679";
-    sha256 = "0n8kb0ph3kvyjmqs8jxpg5s82al650cdf0fsp0c8ai2q00ig8gjl";
+    repo = "hpos-config";
+    rev = "a64da0d9bc0ef87bc358fcdad6323b424cf4971b";
+    sha256 = "1059lfr2vnacq3aghmir007vgql4za197xx2qlm732vhb6svgpma";
   };
 
   nixpkgs-mozilla = fetchTarball {
@@ -81,6 +81,11 @@ let
 in
 
 {
+  inherit (callPackage aorura {})
+    aorura-cli
+    aorura-emu
+    ;
+
   inherit (callPackage cargo-to-nix {})
     buildRustPackage
     cargoToNix
@@ -102,10 +107,11 @@ in
 
   inherit (callPackage hp-admin-crypto {}) hp-admin-crypto-server;
 
-  inherit (callPackage hpos-state {})
-    hpos-state-derive-keystore
-    hpos-state-gen-cli
-    hpos-state-gen-web
+  inherit (callPackage hpos-config {})
+    hpos-config-gen-cli
+    hpos-config-gen-web
+    hpos-config-into-base36-id
+    hpos-config-into-keystore
     ;
 
   inherit (callPackage npm-to-nix {}) npmToNix;
@@ -117,9 +123,6 @@ in
       inherit (rust.packages.nightly) rustPlatform;
     }
   );
-
-  buildHoloPortOS = hardware:
-    buildImage [ holoportos.profile hardware ];
 
   buildImage = imports:
     let
@@ -136,14 +139,24 @@ in
     in
       head (attrVals imageNames system);
 
-  singletonDir = path:
+  mkJobsets = callPackage ./mk-jobsets {};
+
+  mkRelease = src: platforms:
     let
-      drv = lib.toDerivation path;
+      buildMatrix =
+        lib.mapAttrs (_: pkgs: import src { inherit pkgs; }) platforms;
     in
-      runCommand "singleton" {} ''
-        mkdir $out
-        ln -s ${path} $out/${drv.name}
-      '';
+      {
+        aggregate = releaseTools.channel {
+          name = "aggregate";
+          inherit src;
+
+          constituents = with lib;
+            concatMap (collect isDerivation) (attrValues buildMatrix);
+        };
+
+        platforms = buildMatrix;
+      };
 
   tryDefault = x: default:
     let
@@ -170,28 +183,23 @@ in
     import ./dna-packages final previous
   );
 
-  aurora-led = callPackage ./aurora-led {};
-
-  dnscrypt-proxy2 = callPackage ./dnscrypt-proxy2 {};
-
-  extlinux-conf-builder = callPackage ./extlinux-conf-builder {};
-
-  inherit (callPackage holo-envoy {}) holo-envoy;
-
   inherit (callPackage holochain-rust {})
     holochain-cli
     holochain-conductor
     sim2h-server
     ;
 
-  hclient = callPackage ./hclient {};
+  holo = recurseIntoAttrs {
+    buildProfile = profile: buildImage [
+      "${holo-nixpkgs.path}/profiles/logical/holo/${profile}"
+      "${pkgs.path}/nixos/modules/virtualisation/qemu-vm.nix"
+    ];
 
-  holofuel-app = callPackage ./holofuel-app {};
-
-  holoport-hardware-test = callPackage ./holoport-hardware-test {};
-
-  holoport-nano-dtb = callPackage ./holoport-nano-dtb {
-    linux = linux_latest;
+    hydra-master = holo.buildProfile "hydra/master";
+    hydra-minion = holo.buildProfile "hydra/minion";
+    router-gateway = holo.buildProfile "router-gateway";
+    sim2h = holo.buildProfile "sim2h";
+    wormhole-relay = holo.buildProfile "wormhole-relay";
   };
 
   holo-auth-client = callPackage ./holo-auth-client {
@@ -199,25 +207,33 @@ in
     python3 = python3.withPackages (ps: [ ps.requests ]);
   };
 
+  holo-cli = callPackage ./holo-cli {};
+
+  holo-nixpkgs.path = gitignoreSource ../..;
+
   holo-nixpkgs-tests = recurseIntoAttrs (
-    import ../../tests {
-      inherit pkgs;
-    }
+    import "${holo-nixpkgs.path}/tests" { inherit pkgs; }
   );
 
-  holoportos = recurseIntoAttrs {
-    profile = tryDefault <nixos-config> ../../profiles/holoportos;
+  holoport-nano-dtb = callPackage ./holoport-nano-dtb {
+    linux = linux_latest;
+  };
 
-    qemu = (buildHoloPortOS ../../profiles/hardware/qemu) // {
-      meta.platforms = [ "aarch64-linux" "x86_64-linux" ];
+  hpos = recurseIntoAttrs {
+    buildImage = imports:
+      buildImage (imports ++ [ hpos.logical ]);
+
+    logical = "${holo-nixpkgs.path}/profiles/logical/hpos";
+    physical = "${holo-nixpkgs.path}/profiles/physical/hpos";
+
+    qemu = (hpos.buildImage [ "${hpos.physical}/vm/qemu" ]) // {
+      meta.platforms = [ "x86_64-linux" ];
     };
 
-    virtualbox = (buildHoloPortOS ../../profiles/hardware/virtualbox) // {
+    virtualbox = (hpos.buildImage [ "${hpos.physical}/vm/virtualbox" ]) // {
       meta.platforms = [ "x86_64-linux" ];
     };
   };
-
-  holoportos-install = callPackage ./holoportos-install {};
 
   hpos-admin = callPackage ./hpos-admin {
     stdenv = stdenvNoCC;
@@ -229,18 +245,17 @@ in
     python3 = python3.withPackages (ps: [ ps.click ps.requests ]);
   };
 
-  hpos-init = callPackage ./hpos-init {
-    stdenv = stdenvNoCC;
-    python3 = python3.withPackages (ps: [ ps.magic-wormhole ]);
-  };
+  hpos-init = python3Packages.callPackage ./hpos-init {};
 
-  hpos-led-daemon = callPackage ./hpos-led-daemon {};
+  hpos-led-manager = callPackage ./hpos-led-manager {
+    inherit (rust.packages.nightly) rustPlatform;
+  };
 
   hpstatus = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "hpstatus";
-    rev = "005435217305f76f3d51722f462f310a2baeab11";
-    sha256 = "1gszq98xdvq515g2kaxan886p4cgmwgqmb0g7b9a66m5087p3jg4";
+    rev = "562c637f7fa370633998efa319ae1225d7241537";
+    sha256 = "1wm744mavp7k9ajikzm3hg01byc58s9dfwsmy47j1mhzc0j0l2fr";
   };
 
   hydra = previous.hydra.overrideAttrs (
@@ -249,6 +264,7 @@ in
       patches = [
         ./hydra/logo-vertical-align.diff
         ./hydra/no-restrict-eval.diff
+        ./hydra/secure-github.diff
       ];
       meta = super.meta // {
         hydraPlatforms = [ "x86_64-linux" ];
@@ -268,6 +284,8 @@ in
       sun50i-a64-gpadc-iio = self.callPackage ./linux-packages/sun50i-a64-gpadc-iio {};
     }
   );
+
+  magic-wormhole-mailbox-server = python3Packages.callPackage ./magic-wormhole-mailbox-server {};
 
   nodejs = nodejs-12_x;
 

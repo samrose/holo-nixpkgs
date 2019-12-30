@@ -1,8 +1,6 @@
 {
   imports = [
-    ../../hardware/holoport
-    ../../holoportos
+    ../../logical/hpos
+    ../../physical/hpos/holoport
   ];
-
-  system.holoportos.led-daemon.enable = true;
 }

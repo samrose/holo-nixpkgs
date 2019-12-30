@@ -18,60 +18,20 @@ in
 
   config = mkIf cfg.enable {
     systemd.services.holo-auth-client = {
-      after = [ "network.target" "systemd-logind.service" "zerotierone.service" ];
+      after = [ "network.target" "zerotierone.service" ];
+      requires = [ "zerotierone.service" ];
+      wantedBy = [ "multi-user.target" ];
 
       path = with pkgs; [
-        hpos-init
-        hpos-state-derive-keystore
-        jq
-        utillinux
+        hpos-config-into-base36-id
         zerotierone
       ];
 
-      wantedBy = [ "multi-user.target" ];
-
-      script = ''
-        zerotier_status() {
-          zerotier-cli -j listnetworks | jq -r .[0].status
-        }
-
-        while [ "$(zerotier_status)" = "REQUESTING_CONFIGURATION" ]; do
-          sleep 1
-        done
-
-        export HPOS_STATE_PATH=$(hpos-init)
-
-        mkdir -p /var/lib/holochain-conductor
-        cd /var/lib/holochain-conductor
-
-        hpos-state-derive-keystore < $HPOS_STATE_PATH > holo-keystore 2> holo-keystore.pub
-        export HOLO_PUBLIC_KEY=$(cat holo-keystore.pub)
-
-        if [ "$(zerotier_status)" = "ACCESS_DENIED" ]; then
-          exec ${cfg.package}/bin/holo-auth-client
-        fi
-      '';
-
       serviceConfig = {
+        ExecStart = "${cfg.package}/bin/holo-auth-client";
         RemainAfterExit = true;
         Type = "oneshot";
-        User = "root";
       };
-    };
-
-    systemd.services.holochain-conductor = {
-      after = [ "holo-auth-client.service" ];
-      requires = [ "holo-auth-client.service" ];
-    };
-
-    systemd.services.holo-router-agent = {
-      after = [ "holo-auth-client.service" ];
-      requires = [ "holo-auth-client.service" ];
-    };
-
-    systemd.services.hp-admin-crypto-server = {
-      after = [ "holo-auth-client.service" ];
-      requires = [ "holo-auth-client.service" ];
     };
   };
 }
