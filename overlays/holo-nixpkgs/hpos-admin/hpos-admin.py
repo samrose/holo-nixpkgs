@@ -38,7 +38,7 @@ def cas_hash(data):
     return b64encode(sha512(dump.encode()).digest()).decode()
 
 
-@app.route('/v1/config', methods=['GET'])
+@app.route('/api/v1/config', methods=['GET'])
 def get_config():
     return jsonify(get_state_data()['v1']['config'])
 
@@ -50,7 +50,7 @@ def replace_file_contents(path, data):
     os.rename(tmp_path, path)
 
 
-@app.route('/v1/config', methods=['PUT'])
+@app.route('/api/v1/config', methods=['PUT'])
 def put_config():
     with state_lock:
         state = get_state_data()
@@ -69,14 +69,14 @@ def zerotier_info():
     return json.loads(proc.stdout)
 
 
-@app.route('/v1/status', methods=['GET'])
+@app.route('/api/v1/status', methods=['GET'])
 def status():
     return jsonify({
         'zerotier': zerotier_info()
     })
 
 
-@app.route('/v1/upgrade', methods=['POST'])
+@app.route('/api/v1/upgrade', methods=['POST'])
 def upgrade():
     rebuild(priority=1, args=['--upgrade'])
     return '', 200
