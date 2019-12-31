@@ -100,9 +100,7 @@ in
     holo-router-gateway
     ;
 
-  inherit (callPackage hp-admin {})
-    hp-admin-ui
-    ;
+  inherit (callPackage hp-admin {}) hp-admin-ui;
 
   inherit (callPackage hp-admin-crypto {}) hp-admin-crypto-server;
 
