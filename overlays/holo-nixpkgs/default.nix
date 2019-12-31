@@ -102,7 +102,6 @@ in
 
   inherit (callPackage hp-admin {})
     hp-admin-ui
-    holofuel-ui
     ;
 
   inherit (callPackage hp-admin-crypto {}) hp-admin-crypto-server;

@@ -109,13 +109,6 @@ in
           '';
         };
 
-        "/holofuel/" = {
-          alias = "${pkgs.holofuel-ui}/";
-          extraConfig = ''
-            limit_req zone=zone1 burst=30;
-          '';
-        };
-
         "/v1/hosting/" = {
           proxyPass = "http://127.0.0.1:4656";
           proxyWebsockets = true;
