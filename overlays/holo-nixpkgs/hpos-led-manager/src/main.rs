@@ -5,7 +5,8 @@ use serde::*;
 
 use std::env;
 use std::fs;
-use std::path::PathBuf;
+use std::net::{TcpStream, ToSocketAddrs};
+use std::path::{Path, PathBuf};
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -40,7 +41,23 @@ fn main() -> Fallible<()> {
     let state_temp_path = state_path.with_extension("tmp");
 
     loop {
-        let state = State::Aurora;
+        let router_gateway_addrs = "router-gateway.holo.host:80".to_socket_addrs();
+        let online = match router_gateway_addrs {
+            Ok(mut addrs) => match addrs.next() {
+                Some(addr) => TcpStream::connect_timeout(&addr, Duration::new(1, 0)).is_ok(),
+                None => false,
+            },
+            Err(_) => false,
+        };
+
+        let hpos_config_found = Path::new("/run/hpos-init/hpos-config.json").exists();
+
+        let state = match (online, hpos_config_found) {
+            (false, _) => State::Flash(Color::Purple),
+            (true, false) => State::Flash(Color::Orange),
+            _ => State::Aurora,
+        };
+
         led.set(state)?;
 
         fs::write(&state_temp_path, serde_json::to_vec(&state)?)?;
