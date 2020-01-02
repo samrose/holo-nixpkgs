@@ -108,7 +108,7 @@ in
         };
 
         "/api/v1/" = {
-          proxyPass = "http://unix:/run/hpos-admin.sock:/";
+          proxyPass = "http://unix:/run/hpos-admin.sock:";
           extraConfig = ''
             auth_request /auth/;
           '';
