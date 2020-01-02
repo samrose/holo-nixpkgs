@@ -4,7 +4,7 @@ let
   tmuxConfig = writeText "tmux.conf" ''
     set -g default-shell ${bashInteractive}/bin/bash
     set -g status-interval 1
-    set -g status-right "#(${jq}/bin/jq --from-file ${./aorura-tmux-status.jq} --raw-output < ${config.services.hpos-led-manager.statePath})"
+    set -g status-right "#(${python3}/bin/python ${./tmux-status.py} < ${config.services.hpos-led-manager.statePath})"
     set -g status-style bg=white,fg=black
   '';
 

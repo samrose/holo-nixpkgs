@@ -3,20 +3,20 @@
 with lib;
 
 let
-  cfg = config.system.holoportos.autoUpgrade;
+  cfg = config.system.holo-nixpkgs.autoUpgrade;
 in
 
 {
   options = {
-    system.holoportos.autoUpgrade = {
-      enable = mkEnableOption "HoloPortOS auto-upgrade";
+    system.holo-nixpkgs.autoUpgrade = {
+      enable = mkEnableOption "Holo Nixpkgs auto-upgrade";
 
       dates = mkOption {};
     };
   };
 
   config = mkIf cfg.enable {
-    systemd.services.holoportos-upgrade = {
+    systemd.services.holo-nixpkgs-auto-upgrade = {
       serviceConfig.Type = "oneshot";
       unitConfig.X-StopOnRemoval = false;
       restartIfChanged = false;

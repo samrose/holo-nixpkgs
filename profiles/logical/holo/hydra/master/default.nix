@@ -6,10 +6,9 @@ let
 in
 
 {
-  imports = [
-    ../.
-    ../master.nix
-  ];
+  imports = [ ../. ];
+
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
 
   nix.buildMachines = [
     {
@@ -46,35 +45,58 @@ in
     }
   ];
 
+  nix.distributedBuilds = true;
+
+  nix.extraOptions = ''
+    builders-use-substitutes = true
+  '';
+
   services.postgresql.extraConfig = ''
     max_connections = 1024
   '';
 
-  services.hydra.extraConfig = ''
-    binary_cache_public_uri = https://cache.holo.host
-    evaluator_max_heap_size = ${toString (4 * 1024 * 1024 * 1024)}
-    log_prefix = https://cache.holo.host/
-    max_concurrent_evals = 12
-    max_output_size = 17179869184
-    server_store_uri = https://cache.holo.host?local-nar-cache=/var/cache/hydra/nar-cache
-    store_uri = s3://${wasabiBucket}?endpoint=${wasabiEndpoint}&log-compression=br&ls-compression=br&parallel-compression=1&secret-key=/var/lib/hydra/queue-runner/keys/cache.holo.host-1/secret&write-nar-listing=1
-    upload_logs_to_binary_cache = true
+  services.hydra = {
+    enable = true;
+    hydraURL = "https://${config.services.nginx.virtualHosts.hydra.serverName}";
+    logo = ./logo.svg;
+    notificationSender = "hydra@holo.host";
+    useSubstitutes = true;
+    extraConfig = ''
+      binary_cache_public_uri = https://cache.holo.host
+      evaluator_max_heap_size = ${toString (4 * 1024 * 1024 * 1024)}
+      log_prefix = https://cache.holo.host/
+      max_concurrent_evals = 12
+      max_output_size = 17179869184
+      server_store_uri = https://cache.holo.host?local-nar-cache=/var/cache/hydra/nar-cache
+      store_uri = s3://${wasabiBucket}?endpoint=${wasabiEndpoint}&log-compression=br&ls-compression=br&parallel-compression=1&secret-key=/var/lib/hydra/queue-runner/keys/cache.holo.host-1/secret&write-nar-listing=1
+      upload_logs_to_binary_cache = true
 
-    <githubstatus>
-      context = Hydra
-      jobs = holo-nixpkgs:.*:holo-nixpkgs
-      inputs = holo-nixpkgs
-    </githubstatus>
+      <githubstatus>
+        context = Hydra
+        jobs = holo-nixpkgs:.*:holo-nixpkgs
+        inputs = holo-nixpkgs
+      </githubstatus>
 
-    <githubstatus>
-      context = Hydra
-      jobs = hp-admin:.*:hp-admin
-      inputs = hp-admin
-    </githubstatus>
-  '';
+      <githubstatus>
+        context = Hydra
+        jobs = hp-admin:.*:hp-admin
+        inputs = hp-admin
+      </githubstatus>
+    '';
+  };
 
   services.nginx = {
-    virtualHosts.hydra.serverName = "hydra.holo.host";
+    enable = true;
+
+    virtualHosts.hydra = {
+      enableACME = true;
+      forceSSL = true;
+      locations = {
+        "/".proxyPass = "http://localhost:${toString config.services.hydra.port}";
+        "/favicon.ico".root = ./favicon;
+      };
+      serverName = "hydra.holo.host";
+    };
 
     # First HoloPort/HoloPort+ batch points to Hydra-based Nix channel on
     # holoportbuild.holo.host. This has to be left here forever for reverse-
@@ -103,7 +125,7 @@ in
     virtualHosts.quickstart = {
       enableACME = true;
       forceSSL = true;
-      root = pkgs.hpos-state-gen-web;
+      root = pkgs.hpos-config-gen-web;
       serverName = "quickstart.holo.host";
       extraConfig = ''
         types {

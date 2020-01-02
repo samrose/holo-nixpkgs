@@ -16,14 +16,14 @@ def request(ctx, method, path, **kwargs):
     return requests.request(method, ctx.obj['url'] + path, **kwargs)
 
 
-def get_config_inner(ctx):
+def get_settings_inner(ctx):
     return request(ctx, 'GET', '/v1/config').json()
 
 
-@cli.command(help='Get hpos-state.json v1.config')
+@cli.command(help='Get hpos-config.json v1.settings')
 @click.pass_context
-def get_config(ctx):
-    print(get_config_inner(ctx))
+def get_settings(ctx):
+    print(get_settings_inner(ctx))
 
 
 def cas_hash(data):
@@ -31,12 +31,12 @@ def cas_hash(data):
     return b64encode(sha512(dump.encode()).digest()).decode()
 
 
-@cli.command(help='Set hpos-state.json v1.config and trigger NixOS rebuild')
+@cli.command(help='Set hpos-config.json v1.settings and trigger NixOS rebuild')
 @click.argument('k')
 @click.argument('v')
 @click.pass_context
-def put_config(ctx, k, v):
-    config = get_config_inner(ctx)
+def put_settings(ctx, k, v):
+    config = get_settings_inner(ctx)
     cas_hash1 = cas_hash(config)
     config[k] = v
 

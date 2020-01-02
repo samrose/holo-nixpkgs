@@ -10,10 +10,11 @@
     ./services/holochain-conductor.nix
     ./services/hp-admin-crypto-server.nix
     ./services/hpos-admin.nix
+    ./services/hpos-init.nix
     ./services/hpos-led-manager.nix
     ./services/magic-wormhole-mailbox-server.nix
     ./services/sim2h-server.nix
-    ./system/holoportos/auto-upgrade.nix
+    ./system/holo-nixpkgs/auto-upgrade.nix
   ];
 
   # Compat shim, to be removed along with /profiles/targets:

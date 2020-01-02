@@ -1,4 +1,4 @@
-{ lib, makeTest, holo-cli, hpos, hpos-state-gen-cli, hpos-state-derive-keystore, jq }:
+{ lib, makeTest, holo-cli, hpos, hpos-config-gen-cli, hpos-config-into-keystore, jq }:
 
 makeTest {
   name = "holochain-conductor";
@@ -8,8 +8,8 @@ makeTest {
 
     environment.systemPackages = [
       holo-cli
-      hpos-state-gen-cli
-      hpos-state-derive-keystore
+      hpos-config-gen-cli
+      hpos-config-into-keystore
       jq
     ];
 
@@ -20,11 +20,11 @@ makeTest {
     startAll;
 
     $machine->succeed(
-      "hpos-state-gen-cli --email test\@holo.host --password : --seed-from ${./seed.txt} > /etc/hpos-state.json"
+      "hpos-config-gen-cli --email test\@holo.host --password : --seed-from ${./seed.txt} > /etc/hpos-config.json"
     );
 
     $machine->succeed(
-      "hpos-state-derive-keystore < /etc/hpos-state.json > /var/lib/holochain-conductor/holo-keystore 2> /var/lib/holochain-conductor/holo-keystore.pub"
+      "hpos-config-into-keystore < /etc/hpos-config.json > /var/lib/holochain-conductor/holo-keystore 2> /var/lib/holochain-conductor/holo-keystore.pub"
     );
 
     $machine->systemctl("restart holochain-conductor.service");

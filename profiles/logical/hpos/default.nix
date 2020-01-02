@@ -3,6 +3,20 @@
 with pkgs;
 
 let
+  holo-router-acme = writeShellScriptBin "holo-router-acme" ''
+    base36_id=$(${hpos-config-into-base36-id}/bin/hpos-config-into-base36-id < "$HPOS_CONFIG_PATH")
+    exec ${simp_le}/bin/simp_le \
+      --default_root ${config.security.acme.certs.default.webroot} \
+      --valid_min ${toString config.security.acme.validMin} \
+      -d "$base36_id.holohost.net" \
+      -f fullchain.pem \
+      -f full.pem \
+      -f key.pem \
+      -f account_key.json \
+      -f account_reg.json \
+      -v
+  '';
+
   conductorHome = config.users.users.holochain-conductor.home;
 
   dnas = with dnaPackages; [
@@ -72,13 +86,14 @@ in
 
   services.hpos-admin.enable = true;
 
+  services.hpos-init.enable = lib.mkDefault true;
+
   services.mingetty.autologinUser = "root";
 
   services.nginx = {
     enable = true;
 
     virtualHosts.default = {
-      serverName = "localhost";
       enableACME = true;
       onlySSL = true;
       locations = {
@@ -189,10 +204,13 @@ in
     };
   };
 
-  system.holoportos.autoUpgrade = {
+  system.holo-nixpkgs.autoUpgrade = {
     enable = lib.mkDefault true;
     dates = "*:0/10";
   };
+
+  systemd.services.acme-default.serviceConfig.ExecStart =
+    lib.mkForce "${holo-router-acme}/bin/holo-router-acme";
 
   system.stateVersion = "19.09";
 

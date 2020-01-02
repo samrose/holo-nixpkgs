@@ -12,13 +12,15 @@ in
     channelsPath
   ];
 
-  system.activationScripts.nix = lib.mkForce (lib.stringAfter [ "etc" "users" ] ''
-    ${config.nix.package}/bin/nix ping-store --no-net
+  system.activationScripts.nix = lib.mkForce (
+    lib.stringAfter [ "etc" "users" ] ''
+      ${config.nix.package}/bin/nix ping-store --no-net
 
-    if [ ! -e /root/.nix-channels ]; then
-      ${config.nix.package}/bin/nix-channel --add ${config.system.defaultChannel} holo-nixpkgs
-    fi
-  '');
+      if [ ! -e /root/.nix-channels ]; then
+        ${config.nix.package}/bin/nix-channel --add ${config.system.defaultChannel} holo-nixpkgs
+      fi
+    ''
+  );
 
   system.defaultChannel = lib.mkDefault "https://hydra.holo.host/channel/custom/holo-nixpkgs/master/holo-nixpkgs";
 }
