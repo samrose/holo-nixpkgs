@@ -63,8 +63,8 @@ def put_settings():
 
 
 def zerotier_info():
-    proc = subprocess.run(['sudo', 'zerotier-cli', '-j', 'info'],
-                          capture_output=True, check=True)
+    proc = subprocess.run(['/run/current-system/sw/bin/zerotier-cli -j info'],
+                          capture_output=True, check=True, shell=True)
     return json.loads(proc.stdout)
 
 
