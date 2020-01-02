@@ -3,7 +3,7 @@ import json
 import sys
 
 def aorura_tmux_color(color):
-    return {'orange': 'colour166',
+    return {'orange': 'colour202',
             'purple': 'colour63'}.get(color, color)
 
 

@@ -15,7 +15,7 @@ mkShell {
     }
 
     hpos-shell() {
-      drv=$(nix-build --attr hpos.qemu --no-out-link --show-trace)
+      drv=$(nix-build ${root} --attr hpos.qemu --no-out-link --show-trace)
       [ -z "$drv" ] || "$drv/bin/run-hpos-vm"
     }
 
