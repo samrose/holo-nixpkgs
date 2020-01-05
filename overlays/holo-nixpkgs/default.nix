@@ -67,6 +67,20 @@ let
     sha256 = "1059lfr2vnacq3aghmir007vgql4za197xx2qlm732vhb6svgpma";
   };
 
+  lua = {
+    src = fetchFromGitHub {
+      owner = "openresty";
+      repo = "lua-nginx-module";
+      rev = "v0.10.15";
+      sha256 = "1j216isp0546hycklbr5wi8mlga5hq170hk7f2sm16sfavlkh5gz";
+    };
+    inputs = [ pkgs.luajit ];
+    preConfigure = ''
+      export LUAJIT_LIB="${pkgs.luajit}/lib"
+      export LUAJIT_INC="${pkgs.luajit}/include/luajit-2.0"
+    '';
+  };
+
   nixpkgs-mozilla = fetchTarball {
     url = "https://github.com/mozilla/nixpkgs-mozilla/archive/dea7b9908e150a08541680462fe9540f39f2bceb.tar.gz";
     sha256 = "0kvwbnwxbqhc3c3hn121c897m89d9wy02s8xcnrvqk9c96fj83qw";
@@ -283,6 +297,10 @@ in
   );
 
   magic-wormhole-mailbox-server = python3Packages.callPackage ./magic-wormhole-mailbox-server {};
+
+  nginx = (previous.nginx.override {
+    modules = with previous.nginx; [ lua ];
+  });
 
   nodejs = nodejs-12_x;
 
