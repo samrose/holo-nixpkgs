@@ -17,7 +17,7 @@ in
       ${config.nix.package}/bin/nix ping-store --no-net
 
       if [ ! -e /root/.nix-channels ]; then
-        ${config.nix.package}/bin/nix-channel --add ${config.system.defaultChannel} holo-nixpkgs
+        echo "${config.system.defaultChannel} holo-nixpkgs" > "/root/.nix-channels"
       fi
     ''
   );
