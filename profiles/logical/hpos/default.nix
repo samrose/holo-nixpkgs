@@ -132,7 +132,6 @@ in
             internal;
             proxy_set_header X-Original-URI $request_uri;
             proxy_set_header X-Original-Method $request_method;
-            proxy_set_header X-Original-Body $request_body;
             proxy_pass_request_body off;
             proxy_set_header Content-Length "";
           '';
