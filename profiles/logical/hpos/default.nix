@@ -124,6 +124,9 @@ in
         "/api/v1/ws/" = {
           proxyPass = "http://127.0.0.1:42233";
           proxyWebsockets = true;
+          extraConfig = ''
+            auth_request /auth/;
+          '';
         };
 
         "/auth/" = {
