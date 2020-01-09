@@ -6,6 +6,7 @@ from tempfile import mkstemp
 import json
 import logging
 import os
+import stat
 
 app = Flask(__name__)
 log = logging.getLogger(__name__)
@@ -87,6 +88,7 @@ def unix_socket(path):
         os.remove(path)
     sock.bind(path)
     sock.listen()
+    os.chmod(path, stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO) # support various services' users connecting
     return sock
 
 
