@@ -6,35 +6,35 @@ let
   happ-store = fetchFromGitHub {
     owner = "holochain";
     repo = "happ-store";
-    rev = "4e27b888810b45d706b2982f7d97aa454aaf74cf";
-    sha256 = "18h0x2m5vnmm1xz5k0j7rsc4il62vhq29qcl7wn1f9vmsfac2lrv";
+    rev = "11b4a43e4fe12c71e1efc3a19ccfab021bc8ede9";
+    sha256 = "07azyb4gspabh13h9cxwkpmlissqah88viy7m6dmq0sh0cdbir7k";
   };
 
   holofuel = fetchurl {
-    url = "https://holo-host.github.io/holofuel/releases/download/v0.13.1-alpha1/holofuel.dna.json";
+    url = "https://holo-host.github.io/holofuel/releases/download/v0.14.1-alpha1/holofuel.dna.json";
     name = "holofuel.dna.json";
-    sha256 = "10xmq52m37r09flmsri64iwrpi9l88s9zmdl50l346ld6rxd0jf8";
+    sha256 = "0bkixlh5ass5p9xzi4hh31z2lyw29qbn742fmnlbl6zi6y5qrsjd";
   };
 
   holo-hosting-app = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "holo-hosting-app";
-    rev = "bbda39876d5bc206712fcbe27fdb5e405006e539";
-    sha256 = "0wf7133cam8s3m6hww5fk29343z2a0xf2qv764radx5pcr02lhs0";
+    rev = "da3f1c4efdf6634fe8ca255ff0baf399c2f4fbb4";
+    sha256 = "1jlx1992zc9xc1gc12iqy409qf1nakpmsrn0lrr97p76r55igacz";
   };
 
-  hylo-holo-dnas = fetchFromGitHub {
-    owner = "holochain";
-    repo = "hylo-holo-dnas";
-    rev = "b1d07d4669a7c0e317de2cf0034960fc094e19b1";
-    sha256 = "1hn1x16a7lxrp879vxg8imd5l7kkvg1pdqb9fr1v2jjcfdx7j943";
-  };
+  holo-communities-dna = fetchFromGitHub {
+    owner = "Holo-Host";
+    repo = "holo-communities-dna";
+    rev = "53f204094e35f21bdd5009ed43cc16b093560737";
+    sha256 = "0jyjj1762d905ysgkhg3p062vp9rmx552nb87z6n4vb11lm3hhh6";
+   };
 
   servicelogger = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "servicelogger";
-    rev = "3b716c325e4243f5c88e2f65530cd6495a9f4ae5";
-    sha256 = "03izll3b5ajgbw9b6df7vxc68ysxd4xzbrw2p41r9ybgmnn9bii8";
+    rev = "389d6f7c1f0bb4e514a9d4ea56d5220992abed89";
+    sha256 = "13q78mc33h3d4rvmbh7sqzh8rlpxf895b656jji4g74m1ps1cd10";
   };
 in
 
@@ -43,7 +43,7 @@ in
 
   inherit (callPackage holo-hosting-app {}) holo-hosting-app;
 
-  inherit (callPackage hylo-holo-dnas {}) hylo-holo-dnas;
+  inherit (callPackage holo-communities-dna {}) holo-communities-dna;
 
   inherit (callPackage servicelogger {}) servicelogger;
 

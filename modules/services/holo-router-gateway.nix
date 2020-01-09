@@ -25,6 +25,7 @@ in
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/holo-router-gateway";
         KillMode = "process";
+        LimitNOFILE = 65535;
         Restart = "always";
       };
     };

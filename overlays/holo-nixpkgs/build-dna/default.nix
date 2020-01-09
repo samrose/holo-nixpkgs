@@ -1,11 +1,10 @@
 { stdenv
-, callPackage
 , cargoToNix
 , gitignoreSource
 , npmToNix
 , runCommand
 , rustPlatform
-, holochain-cli
+, holochain-rust
 , nodejs
 , which
 }:
@@ -15,28 +14,10 @@
 with stdenv.lib;
 
 let
-  holochain-rust =
-    let
-      res = builtins.tryEval <holochain-rust>;
-    in
-      if res.success
-      then gitignoreSource <holochain-rust>
-      else holochain-cli.src;
-
-  holochain-rust-shell =
-    let
-      res = builtins.tryEval <holochain-rust>;
-    in
-      if res.success
-      then toString <holochain-rust>
-      else holochain-cli.src;
-
-  holochainPackages = callPackage holochain-rust {};
-
   this = runCommand name {} ''
     cp -r ${src} $out
     chmod +w $out
-    ln -s ${holochain-rust} $out/holochain-rust
+    ln -s ${holochain-rust.src} $out/holochain-rust
   '';
 in
 
@@ -45,9 +26,7 @@ rustPlatform.buildRustPackage (
     inherit name;
 
     nativeBuildInputs = nativeBuildInputs ++ [
-      holochainPackages.holochain-cli
-      holochainPackages.holochain-conductor
-      holochainPackages.sim2h-server
+      holochain-rust
       nodejs
       which
     ];
@@ -56,7 +35,7 @@ rustPlatform.buildRustPackage (
   } // optionalAttrs shell {
     shellHook = ''
       rm -f holochain-rust
-      ln -s ${holochain-rust-shell} holochain-rust
+      ln -s ${holochain-rust.src} holochain-rust
     '';
   } // optionalAttrs (shell == false) {
     src = this;

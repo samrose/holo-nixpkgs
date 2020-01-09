@@ -35,7 +35,9 @@ branches:
           - Hydra
       enforce_admins: false
       restrictions:
-        users: []
+        users:
+          - samrose
+          - yegortimoshenko
         teams: []
   - name: master
     protection:
@@ -52,5 +54,7 @@ branches:
           - Hydra
       enforce_admins: true
       restrictions:
-        users: []
+        users:
+          - samrose
+          - yegortimoshenko
         teams: []

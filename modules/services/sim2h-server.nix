@@ -11,7 +11,7 @@ in
     enable = mkEnableOption "Holo Envoy";
 
     package = mkOption {
-      default = pkgs.sim2h-server;
+      default = pkgs.holochain-rust;
       type = types.package;
     };
 

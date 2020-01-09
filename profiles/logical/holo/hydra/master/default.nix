@@ -107,37 +107,6 @@ in
       globalRedirect = "hydra.holo.host";
       serverName = "holoportbuild.holo.host";
     };
-
-    virtualHosts.chaperone = {
-      enableACME = true;
-      forceSSL = true;
-      root = pkgs.chaperone;
-      serverName = "chaperone.holo.host";
-    };
-
-    virtualHosts.hpstatus = {
-      enableACME = true;
-      forceSSL = true;
-      root = pkgs.hpstatus;
-      serverName = "hpstatus.holo.host";
-    };
-
-    virtualHosts.quickstart = {
-      enableACME = true;
-      forceSSL = true;
-      root = pkgs.hpos-config-gen-web;
-      serverName = "quickstart.holo.host";
-      extraConfig = ''
-        types {
-          application/javascript js;
-          application/wasm wasm;
-          image/png png;
-          image/svg+xml svg;
-          text/css css;
-          text/html html;
-        }
-      '';
-    };
   };
 
   systemd.tmpfiles.rules = [
