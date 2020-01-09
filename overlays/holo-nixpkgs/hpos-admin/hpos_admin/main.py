@@ -35,14 +35,24 @@ def get_state_data():
         return json.loads(f.read())
 
 
-def cas_hash(data):
-    dump = json.dumps(data, separators=(',', ':'), sort_keys=True)
+def b64_hash(dump):
     return b64encode(sha512(dump.encode()).digest()).decode()
+
+
+def cas_hash(data):
+    return b64_hash(json.dumps(data, separators=(',', ':'), sort_keys=True))
+
+
+@app.route('/v1/config', methods=['GET'])
+def get_settings_cas():
+    return jsonify(cas_hash(get_state_data()['v1']['settings']))
 
 
 @app.route('/v1/config', methods=['GET'])
 def get_settings():
-    return jsonify(get_state_data()['v1']['settings'])
+    settings = get_state_data()['v1']['settings']
+    settings_cas = cas_hash(settings)
+    return jsonify(settings), 200, { 'x-hpos-admin-cas': settings_cas }
 
 
 def replace_file_contents(path, data):
@@ -52,6 +62,15 @@ def replace_file_contents(path, data):
     os.rename(tmp_path, path)
 
 
+def verify_body_hash(request):
+    """Header x-body-hash contains the base-64 SHA-512 hash of the body paylood that was signed."""
+    x_body_hash = request.headers.get('x-body-hash')
+    if x_body_hash:
+        body_hash = b64_hash(request.get_data())
+        assert body_hash == x_body_hash, \
+            "x-body-hash used for authorization didn't match body hash"
+
+
 def update_settings(cas, config, settings):
     assert cas == cas_hash(config['v1']['settings']), \
         "x-hpos-admin-cas header did not match current config settings hash"
@@ -59,10 +78,11 @@ def update_settings(cas, config, settings):
     check_config(config)
     return config
 
-    
+
 @app.route('/v1/config', methods=['PUT'])
 def put_settings():
     try:
+        verify_body_hash(request)
         with state_lock:
             cas = request.headers.get('x-hpos-admin-cas')
             settings = request.get_json(force=True)
