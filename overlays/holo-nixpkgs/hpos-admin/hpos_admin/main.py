@@ -7,6 +7,8 @@ import json
 import logging
 import os
 
+from hpos_config.schema import check_config
+
 app = Flask(__name__)
 log = logging.getLogger(__name__)
 rebuild_queue = queue.PriorityQueue()
@@ -50,14 +52,26 @@ def replace_file_contents(path, data):
     os.rename(tmp_path, path)
 
 
+def update_settings(cas, config, settings):
+    assert cas == cas_hash(config['v1']['settings']), \
+        "x-hpos-admin-cas header did not match current config settings hash"
+    config['v1']['settings'] = settings
+    check_config(config)
+    return config
+
+    
 @app.route('/v1/config', methods=['PUT'])
 def put_settings():
-    with state_lock:
-        state = get_state_data()
-        if request.headers.get('x-hpos-admin-cas') != cas_hash(state['v1']['settings']):
-            return '', 409
-        state['v1']['settings'] = request.get_json(force=True)
-        replace_file_contents(get_state_path(), json.dumps(state, indent=2))
+    try:
+        with state_lock:
+            cas = request.headers.get('x-hpos-admin-cas')
+            settings = request.get_json(force=True)
+            state = update_settings(cas, get_state_data(), settings)
+            replace_file_contents(get_state_path(), json.dumps(state, indent=2))
+    except Exception as exc:
+        log.warning(f"Failed to update HPOS config settings: {exc}")
+        return '', 409
+
     rebuild(priority=5, args=[])
     return '', 200
 
@@ -90,6 +104,10 @@ def unix_socket(path):
     return sock
 
 
-if __name__ == '__main__':
+def main():
     spawn(rebuild_worker)
     pywsgi.WSGIServer(unix_socket('/run/hpos-admin.sock'), app).serve_forever()
+
+
+if __name__ == '__main__':
+    main()

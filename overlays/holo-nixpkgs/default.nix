@@ -49,8 +49,8 @@ let
   hpos-config = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "hpos-config";
-    rev = "eb256e2243e08546b078c106541671fb4d4aa61d";
-    sha256 = "0ldbvrda016aha0p55k1nzqb6636micc0x7xf2ffkqn96fz6d6ly";
+    rev = "4cc54e93ae7d61bedd0f6efe813aeff0deb2e633";
+    sha256 = "15z81xzzyf9ca6wdmn8dzkv6zh6nvz53v1xyhzs4g4gk7dbiw1i7";
   };
 
   nixpkgs-mozilla = fetchTarball {
@@ -94,6 +94,7 @@ in
     hpos-config-gen-cli
     hpos-config-into-base36-id
     hpos-config-into-keystore
+    hpos-config-py
     ;
 
   inherit (callPackage npm-to-nix {}) npmToNix;
@@ -216,11 +217,7 @@ in
     };
   };
 
-  hpos-admin = callPackage ./hpos-admin {
-    stdenv = stdenvNoCC;
-    python3 = python3.withPackages (ps: [ ps.flask ps.gevent ]);
-  };
-
+  hpos-admin = python3Packages.callPackage ./hpos-admin {};
   hpos-admin-client = callPackage ./hpos-admin-client {
     stdenv = stdenvNoCC;
     python3 = python3.withPackages (ps: [ ps.click ps.requests ]);

@@ -1,17 +1,23 @@
-{ stdenv, makeWrapper, python3 }:
+{ buildPythonApplication
+, python3Packages
+, gitignoreSource
+, hpos-config-py
+}:
 
-with stdenv.lib;
+with python3Packages;
 
-stdenv.mkDerivation rec {
+buildPythonApplication {
   name = "hpos-admin";
+  src = gitignoreSource ./.;
 
-  nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ python3 ];
+  propagatedBuildInputs = [
+    flask
+    gevent
+    hpos-config-py
+  ];
 
-  buildCommand = ''
-    makeWrapper ${python3}/bin/python3 $out/bin/${name} \
-      --add-flags ${./hpos-admin.py} 
+  checkInputs = [ pytest ];
+  checkPhase = ''
+    python3 -m pytest
   '';
-
-  meta.platforms = platforms.linux;
 }
