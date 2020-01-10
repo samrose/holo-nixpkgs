@@ -55,6 +55,11 @@ in
     max_connections = 1024
   '';
 
+  services.postgresqlBackup = {
+    enable = true;
+    databases = [ "hydra" ];
+  };
+
   services.hydra = {
     enable = true;
     hydraURL = "https://${config.services.nginx.virtualHosts.hydra.serverName}";
@@ -107,6 +112,18 @@ in
       globalRedirect = "hydra.holo.host";
       serverName = "holoportbuild.holo.host";
     };
+  };
+
+  services.restic.backups.default = {
+      initialize = true;
+      passwordFile = "/etc/nixos/hydra-master-restic-password";
+      paths = [
+        "/etc/nixos"
+        config.services.postgresqlBackup.location
+      ];
+      repository = "s3:https://s3.us-east-2.wasabisys.com/hydra-master-restic";
+      s3CredentialsFile = "/etc/nixos/hydra-master-restic-s3-credentials";
+      user = "postgres";
   };
 
   systemd.tmpfiles.rules = [
