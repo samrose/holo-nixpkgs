@@ -122,7 +122,7 @@ in
         };
 
         "/api/v1/ws/" = {
-          proxyPass = "http://localhost:42233";
+          proxyPass = "http://127.0.0.1:42233";
           proxyWebsockets = true;
           extraConfig = ''
             auth_request /auth/;
@@ -130,7 +130,7 @@ in
         };
 
         "/auth/" = {
-          proxyPass = "http://localhost:2884";
+          proxyPass = "http://127.0.0.1:2884";
           extraConfig = ''
             internal;
             proxy_set_header X-Original-URI $request_uri;
@@ -141,7 +141,7 @@ in
         };
 
         "/v1/hosting/" = {
-          proxyPass = "http://localhost:4656";
+          proxyPass = "http://127.0.0.1:4656";
           proxyWebsockets = true;
         };
       };
