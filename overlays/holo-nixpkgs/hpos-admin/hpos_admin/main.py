@@ -6,6 +6,7 @@ from tempfile import mkstemp
 import json
 import logging
 import os
+import stat
 
 from hpos_config.schema import check_config
 
@@ -43,12 +44,12 @@ def cas_hash(data):
     return b64_hash(json.dumps(data, separators=(',', ':'), sort_keys=True))
 
 
-@app.route('/v1/config', methods=['GET'])
+@app.route('/api/v1/config', methods=['GET'])
 def get_settings_cas():
     return jsonify(cas_hash(get_state_data()['v1']['settings']))
 
 
-@app.route('/v1/config', methods=['GET'])
+@app.route('/api/v1/config', methods=['GET'])
 def get_settings():
     settings = get_state_data()['v1']['settings']
     settings_cas = cas_hash(settings)
@@ -79,7 +80,7 @@ def update_settings(cas, config, settings):
     return config
 
 
-@app.route('/v1/config', methods=['PUT'])
+@app.route('/api/v1/config', methods=['PUT'])
 def put_settings():
     try:
         verify_body_hash(request)
@@ -121,6 +122,7 @@ def unix_socket(path):
         os.remove(path)
     sock.bind(path)
     sock.listen()
+    os.chmod(path, stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO) # support various services' users connecting
     return sock
 
 
