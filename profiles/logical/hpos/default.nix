@@ -20,7 +20,7 @@ let
       -v
   '';
 
-  conductorHome = config.users.users.holochain-conductor.home;
+  conductorHome = "/var/lib/holochain-conductor";
 
   dnas = with dnaPackages; [
     happ-store
@@ -146,8 +146,8 @@ in
         {
           id = "host-agent";
           name = "Host Agent";
-          keystore_file = "${conductorHome}/holo-keystore";
-          public_address = "@public_key@";
+          keystore_file = "/tmp/holo-keystore";
+          public_address = "$HOLO_KEYSTORE_HCID";
         }
       ];
       bridges = [];
