@@ -62,7 +62,7 @@ def replace_file_contents(path, data):
         log.info(f"Resolved symbolic link at {path} to underlying file at {linkpath}")
         path = linkpath
     fd, tmp_path = mkstemp(dir=os.path.dirname(path))
-    with open(fd, 'w') as f:
+    with open(fd, 'w', 0o755) as f:
         f.write(data)
     os.rename(tmp_path, path)
     log.info(f"Atomically updated {path} to: {data}")
