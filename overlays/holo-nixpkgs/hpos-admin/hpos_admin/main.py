@@ -44,6 +44,11 @@ def cas_hash(data):
     return b64_hash(json.dumps(data, separators=(',', ':'), sort_keys=True))
 
 
+@app.route('/api/v1/config_cas', methods=['GET'])
+def get_settings_cas():
+    return jsonify(cas_hash(get_state_data()['v1']['settings']))
+
+
 @app.route('/api/v1/config', methods=['GET'])
 def get_settings():
     settings = get_state_data()['v1']['settings']
