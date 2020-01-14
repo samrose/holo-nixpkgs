@@ -20,11 +20,12 @@ def rebuild_worker():
     while True:
         (_, cmd) = rebuild_queue.get()
         rebuild_queue.queue.clear()
+        log.info(f"Rebuilding w/ command: {cmd}")
         subprocess.run(cmd)
 
 
-def rebuild(priority, args):
-    rebuild_queue.put((priority, ['sudo', 'nixos-rebuild', 'switch'] + args))
+def rebuild(priority, args=None):
+    rebuild_queue.put((priority, ['sudo', 'nixos-rebuild', 'switch'] + (args or [])))
 
 
 def get_state_path():
@@ -36,44 +37,50 @@ def get_state_data():
         return json.loads(f.read())
 
 
-def b64_hash(dump):
-    return b64encode(sha512(dump.encode()).digest()).decode()
-
-
 def cas_hash(data):
-    return b64_hash(json.dumps(data, separators=(',', ':'), sort_keys=True))
-
-
-@app.route('/api/v1/config_cas', methods=['GET'])
-def get_settings_cas():
-    return jsonify(cas_hash(get_state_data()['v1']['settings']))
+    """Return base-64 encoded SHA-512 Digest of any bytes, str or object supplied"""
+    if type(data) not in (bytes, str):
+        data = json.dumps(data, separators=(',', ':'), sort_keys=True)
+    if type(data) != bytes:
+        data = data.encode()
+    return b64encode(sha512(data).digest()).decode()
 
 
 @app.route('/api/v1/config', methods=['GET'])
 def get_settings():
     settings = get_state_data()['v1']['settings']
-    return jsonify(settings), 200, { 'x-hpos-admin-cas': cas_hash(settings) }
+    return jsonify(settings), 200, { 'X-Hpos-Admin-CAS': cas_hash(settings) }
 
 
 def replace_file_contents(path, data):
+    """Replace the current hpos-config.json atomically.  This will seek out the underlying file by
+    following any symlinks, create a temp file in the same directory to write `data` to, and
+    atomically swap the file into place.
+    """
+    if os.path.islink(path):
+        linkpath = os.readlink(path)
+        log.info(f"Resolved symbolic link at {path} to underlying file at {linkpath}")
+        path = linkpath
     fd, tmp_path = mkstemp(dir=os.path.dirname(path))
     with open(fd, 'w') as f:
         f.write(data)
     os.rename(tmp_path, path)
+    log.info(f"Atomically updated {path} to: {data}")
 
 
 def verify_body_hash(request):
-    """Header x-body-hash contains the base-64 SHA-512 hash of the body paylood that was signed."""
+    """Header x-body-hash contains the base-64 SHA-512 hash of the body payload that was signed."""
     x_body_hash = request.headers.get('x-body-hash')
     if x_body_hash:
-        body_hash = b64_hash(request.get_data())
+        body = request.get_data()
+        body_hash = cas_hash(body)
         assert body_hash == x_body_hash, \
-            "x-body-hash used for authorization didn't match body hash"
+            f"x-body-hash {x_body_hash} used for authorization didn't match hash {body_hash} of body: {body}"
 
 
 def update_settings(cas, config, settings):
     assert cas == cas_hash(config['v1']['settings']), \
-        "x-hpos-admin-cas header did not match current config settings hash"
+        "X-Hpos-Admin-CAS header did not match current config settings hash"
     config['v1']['settings'] = settings
     check_config(config)
     return config
@@ -81,19 +88,21 @@ def update_settings(cas, config, settings):
 
 @app.route('/api/v1/config', methods=['PUT'])
 def put_settings():
+    """Update settings if x-body-hash auth validated, and then return current settings and CAS"""
     try:
         verify_body_hash(request)
         with state_lock:
-            cas = request.headers.get('x-hpos-admin-cas')
+            cas = request.headers.get('X-Hpos-Admin-CAS')
             settings = request.get_json(force=True)
             state = update_settings(cas, get_state_data(), settings)
             replace_file_contents(get_state_path(), json.dumps(state, indent=2))
     except Exception as exc:
-        log.warning(f"Failed to update HPOS config settings: {exc}")
-        return '', 409
+        msg = f"Failed to update HPOS config settings: {exc}"
+        log.warning(msg)
+        return msg, 409
 
-    rebuild(priority=5, args=[])
-    return '', 200
+    rebuild(priority=5)
+    return get_settings()
 
 
 def zerotier_info():
@@ -126,6 +135,7 @@ def unix_socket(path):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
     spawn(rebuild_worker)
     pywsgi.WSGIServer(unix_socket('/run/hpos-admin.sock'), app).serve_forever()
 

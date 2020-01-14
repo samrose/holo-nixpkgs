@@ -12,7 +12,7 @@ def test_cas():
 def test_schema():
     settings = { 'admin': { 'email': "a@b.ca", 'public_key': 'xyz==' }}
     settings_bad = { 'admin': { 'email': "a<at>b.ca", 'public_key': 'xyz==' }}
-    with pytest.raises(AssertionError, match='.*x-hpos-admin-cas header did not match.*') as exc_info:
+    with pytest.raises(AssertionError, match='.*X-Hpos-Admin-CAS header did not match.*') as exc_info:
         update_settings(cas="abc==", config=json.loads(config_json), settings=settings)
     config_updated = update_settings(cas=config_cas, config=json.loads(config_json), settings=settings)
     assert config_updated['v1']['settings'] == settings
