@@ -45,15 +45,9 @@ def cas_hash(data):
 
 
 @app.route('/api/v1/config', methods=['GET'])
-def get_settings_cas():
-    return jsonify(cas_hash(get_state_data()['v1']['settings']))
-
-
-@app.route('/api/v1/config', methods=['GET'])
 def get_settings():
     settings = get_state_data()['v1']['settings']
-    settings_cas = cas_hash(settings)
-    return jsonify(settings), 200, { 'x-hpos-admin-cas': settings_cas }
+    return jsonify(settings), 200, { 'x-hpos-admin-cas': cas_hash(settings) }
 
 
 def replace_file_contents(path, data):
