@@ -3,6 +3,7 @@
 , fetchFromGitHub
 , gitignoreSource
 , magic-wormhole
+, hpos-config-py
 }:
 
 let
@@ -24,6 +25,8 @@ in
 buildPythonApplication {
   name = "hpos-init";
   src = gitignoreSource ./.;
-
-  propagatedBuildInputs = [ hpos-seed ];
+  propagatedBuildInputs = [
+    hpos-seed
+    hpos-config-py
+  ];
 }

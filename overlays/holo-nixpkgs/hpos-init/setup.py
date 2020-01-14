@@ -8,5 +8,5 @@ setup(
             'hpos-init=hpos_init.main:main'
         ],
     },
-    install_requires=['hpos-seed']
+    install_requires=['hpos-seed', 'hpos-config']
 )

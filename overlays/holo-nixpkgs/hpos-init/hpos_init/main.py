@@ -8,6 +8,7 @@ import os
 import sys
 import time
 
+from hpos_config.schema import ( CONFIG_FILE, check_config_json );
 
 log = logging.getLogger(__name__)
 
@@ -24,12 +25,12 @@ def state_dir():
 
 @functools.lru_cache()
 def runtime_config_path():
-    return runtime_dir() + '/hpos-config.json'
+    return runtime_dir() + '/' + CONFIG_FILE
 
 
 @functools.lru_cache()
 def state_config_path():
-    return state_dir() + '/hpos-config.json'
+    return state_dir() + '/' + CONFIG_FILE
 
 
 @functools.lru_cache()
@@ -51,14 +52,14 @@ async def receive_config(backoff_exp=1):
         with open(wormhole_code_path(), 'w') as f:
             f.write(wormhole_code)
     try:
-        config = await hpos_seed.receive(on_wormhole_code, reactor)
+        config_json = await hpos_seed.receive(on_wormhole_code, reactor)
+        check_config_json(config_json)
         with open(state_config_path(), 'wb') as f:
-            f.write(config)
-    except WormholeError as e:
+            f.write(config_json)
+    except Exception as exc:
         backoff = 2 ** backoff_exp
         (exc_type, _, _) = sys.exc_info()
-        log.warning("receive failed with %s, retrying in %d seconds",
-                    exc_type, backoff)
+        log.warning(f"{CONFIG_FILE} receive failed with {exc_type}, retrying in {backoff} seconds: {exc}")
         reactor.callLater(backoff, receive_config, backoff_exp + 1)
     finally:
         if os.path.exists(wormhole_code_path()):
@@ -66,7 +67,7 @@ async def receive_config(backoff_exp=1):
 
 
 def scan_config_paths():
-    return glob(state_config_path()) + glob('/media/*/hpos-config.json')
+    return glob(state_config_path()) + glob('/media/*/' + CONFIG_FILE)
 
 
 @ensureDeferred
