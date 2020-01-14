@@ -114,6 +114,13 @@ in
             '';
         };
 
+        "/holofuel/" = {
+            extraConfig = ''
+              rewrite ^/holofuel.*$ / last;
+              return 404;
+            '';
+        };
+
         "/api/v1/" = {
           proxyPass = "http://unix:/run/hpos-admin.sock:";
           extraConfig = ''
