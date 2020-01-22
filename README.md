@@ -41,6 +41,23 @@ HoloportOS is an operating system based on [NixOS][nixos] that supports running
 [holochain]: https://holochain.org
 [nixos]: https://nixos.org
 
+## Changing HPOS to Track `develop` vs. `master`
+
+On your HoloPort or HPOS VM, the following command will alter your subscribed
+nix channel.
+
+To track `develop`:
+- `nix-channel --add https://hydra.holo.host/channel/custom/holo-nixpkgs/develop/holo-nixpkgs`
+- `nix-channel --update`
+(change `develop` above to appropriate repo branch... e.g. `master`,
+`rc-version`)
+
+Your HoloPort or HPOS VM should now upgrade to your desired channel at the next
+auto-upgrade interval.
+
+To begin the upgrade immediately, use the following command:
+- `systemctl start holo-nixpkgs-auto-upgrade.service`
+
 ### QEMU
 
 If you have Nix installed, checkout the repo, enter `nix-shell` and then run
