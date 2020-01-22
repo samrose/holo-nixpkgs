@@ -5,7 +5,7 @@ with pkgs;
 let
   holo-router-acme = writeShellScriptBin "holo-router-acme" ''
     base36_id=$(${hpos-config-into-base36-id}/bin/hpos-config-into-base36-id < "$HPOS_CONFIG_PATH")
-    until $(${curl}/bin/curl --fail --head --insecure --output /dev/null --silent "https://$base36_id.holohost.net"); do
+    until $(${curl}/bin/curl --fail --head --insecure --max-time 10 --output /dev/null --silent "https://$base36_id.holohost.net"); do
       sleep 5
     done
     exec ${simp_le}/bin/simp_le \
