@@ -42,8 +42,8 @@ let
   hp-admin = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "hp-admin";
-    rev = "4ae0f0cc28e199a5d8f4d23f2aa508aae2cf5111";
-    sha256 = "1abna46da9av059kfy10ls0fa6ph8vhh75rh8cv3mvi96m2n06zd";
+    rev = "ac8d51c008ecb1725cce856c3ac9cf54bed6fac9";
+    sha256 = "03idygs6z3zslmf8zx1dmm6flvn5w4x7arpjq596fw9p67xck9n6";
   };
 
   hp-admin-crypto = fetchFromGitHub {
@@ -93,9 +93,7 @@ in
     holo-router-gateway
     ;
 
-  hp-admin-ui = runCommand "hp-admin-ui" {} ''
-    mkdir $out
-  '';
+  inherit (callPackage hp-admin {}) hp-admin-ui;
 
   inherit (callPackage hp-admin-crypto {}) hp-admin-crypto-server;
 
@@ -194,6 +192,10 @@ in
   holo-nixpkgs-tests = recurseIntoAttrs (
     import "${holo-nixpkgs.path}/tests" { inherit pkgs; }
   );
+
+  holochain-cli = holochain-rust;
+
+  holochain-conductor = holochain-rust;
 
   holochain-rust = callPackage ./holochain-rust {
     inherit (darwin.apple_sdk.frameworks) CoreServices Security;
