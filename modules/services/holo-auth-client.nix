@@ -22,11 +22,6 @@ in
       requires = [ "zerotierone.service" ];
       wantedBy = [ "multi-user.target" ];
 
-      path = with pkgs; [
-        hpos-config-into-base36-id
-        zerotierone
-      ];
-
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/holo-auth-client";
         RemainAfterExit = true;

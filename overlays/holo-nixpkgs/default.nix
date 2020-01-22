@@ -25,6 +25,13 @@ let
     sha256 = "0jrh5ghisaqdd0vldbywags20m2cxpkbbk5jjjmwaw0gr8nhsafv";
   };
 
+  holo-auth = fetchFromGitHub {
+    owner = "Holo-Host";
+    repo = "holo-auth";
+    rev = "9ed11638df042d4a887efe510c8334c1673afc49";
+    sha256 = "15ck9i3p3bcw91rgb0f4737n8f0l9k6apngpamzd9mvxkvk040l1";
+  };
+
   holo-router = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "holo-router";
@@ -78,6 +85,8 @@ in
     ;
 
   inherit (callPackage gitignore {}) gitignoreSource;
+
+  inherit (callPackage holo-auth {}) holo-auth-client;
 
   inherit (callPackage holo-router {})
     holo-router-agent
@@ -176,11 +185,6 @@ in
     router-gateway = holo.buildProfile "router-gateway";
     sim2h = holo.buildProfile "sim2h";
     wormhole-relay = holo.buildProfile "wormhole-relay";
-  };
-
-  holo-auth-client = callPackage ./holo-auth-client {
-    stdenv = stdenvNoCC;
-    python3 = python3.withPackages (ps: [ ps.requests ]);
   };
 
   holo-cli = callPackage ./holo-cli {};
