@@ -107,14 +107,14 @@ in
           '';
         };
 
-        "/admin/" = {
+        "~ ^/admin(?:/.*)?$" = {
             extraConfig = ''
               rewrite ^/admin.*$ / last;
               return 404;
             '';
         };
 
-        "/holofuel/" = {
+        "~ ^/holofuel(?:/.*)?$" = {
             extraConfig = ''
               rewrite ^/holofuel.*$ / last;
               return 404;
