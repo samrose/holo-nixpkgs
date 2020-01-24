@@ -185,7 +185,7 @@ in
       instances = map instanceConfig dnas;
       network = {
         type = "sim2h";
-        sim2h_url = "wss://sim2h.holochain.org:9000";
+        sim2h_url = "ws://holofuel.sim2h.net:9000";
       };
       persistence_dir = conductorHome;
       signing_service_uri = "http://localhost:9676";
