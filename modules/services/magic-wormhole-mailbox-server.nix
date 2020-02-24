@@ -19,7 +19,10 @@ in
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
 
-      serviceConfig.ExecStart = "${python}/bin/twistd --nodaemon wormhole-mailbox";
+      serviceConfig = {
+        DynamicUser = true;
+        ExecStart = "${python}/bin/twistd --nodaemon wormhole-mailbox";
+      };
     };
   };
 }
