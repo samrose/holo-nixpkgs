@@ -35,7 +35,8 @@ in {
       wantedBy = [ "default.target" ];
       path = with pkgs; [ udevil procps udisks2 which ];
       serviceConfig.ExecStart = let
-        args = map (command: ''--exec-on-drive "${command}"'') cfg.execOnDrive;
+        systemdEscape = command: builtins.replaceStrings [ "%" ] [ "%%" ] command;
+        args = map (command: ''--exec-on-drive "${systemdEscape command}"'') cfg.execOnDrive;
       in toString ([ "${pkgs.udevil}/bin/devmon" ] ++ args);
     };
 

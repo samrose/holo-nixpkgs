@@ -218,6 +218,11 @@ in
     dates = "*:0/10";
   };
 
+  system.holo-nixpkgs.usbReset = {
+    enable = lib.mkDefault true;
+    filename = "hpos-reset";
+  };
+
   systemd.services.acme-default.serviceConfig.ExecStart =
     lib.mkForce "${holo-router-acme}/bin/holo-router-acme";
 

@@ -17,4 +17,6 @@
   services.zerotierone.enable = false;
 
   system.holo-nixpkgs.autoUpgrade.enable = false;
+
+  system.holo-nixpkgs.usbReset.enable = false;
 }

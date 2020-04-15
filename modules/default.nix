@@ -16,6 +16,7 @@
     ./services/magic-wormhole-mailbox-server.nix
     ./services/sim2h-server.nix
     ./system/holo-nixpkgs/auto-upgrade.nix
+    ./system/holo-nixpkgs/usb-reset.nix
   ];
 
   # Compat shim, to be removed along with /profiles/targets:
