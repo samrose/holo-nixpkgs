@@ -38,11 +38,12 @@ let
   };
 
   hostedDnas = with dnaPackages; [
+    # DO NOT place any DNAs here until you see this WARNING
     # list holo hosted DNAs here
-    {
-      drv = hosted-holofuel;
-      happ-url = "https://holofuel.holo.host";
-    }
+    #{
+    #  drv = hosted-holofuel;
+    #  happ-url = "https://holofuel.holo.host";
+    #}
   ];
 
   hostedDnaConfig = dna: rec {
