@@ -240,7 +240,8 @@ in
   };
 
   hpos-reset = writeShellScriptBin "hpos-reset" ''
-    rm -rf /var && reboot
+    rm -rf /var 
+    reboot
   '';
 
   hydra = previous.hydra.overrideAttrs (
