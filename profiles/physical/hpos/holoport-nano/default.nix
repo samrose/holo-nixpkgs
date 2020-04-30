@@ -3,7 +3,6 @@
 {
   imports = [
     ../.
-    ../automount.nix
   ];
 
   boot.extraModulePackages = with config.boot.kernelPackages; [
@@ -28,6 +27,8 @@
   boot.loader.grub.enable = false;
 
   hardware.deviceTree.package = pkgs.holoport-nano-dtb;
+
+  services.automount.enable = true;
 
   services.hpos-led-manager.devicePath = "/dev/ttyS2";
 }
