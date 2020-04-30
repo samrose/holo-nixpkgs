@@ -60,7 +60,7 @@ let
     id = drv.name;
     holo-hosted = false;
     storage = {
-      path = "${conductorHome}/${drv.name}-${pkgs.dnaHash drv}";
+      path = "${conductorHome}/${pkgs.dnaHash drv}";
       type = "lmdb";
     };
   };
