@@ -234,7 +234,7 @@ in
 
   hpos-admin = callPackage ./hpos-admin {
     stdenv = stdenvNoCC;
-    python3 = python3.withPackages (ps: [ ps.flask ps.gevent ]);
+    python3 = python3.withPackages (ps: with ps; [ flask gevent toml ]);
   };
 
   hpos-admin-client = callPackage ./hpos-admin-client {

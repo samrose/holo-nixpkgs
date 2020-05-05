@@ -7,6 +7,7 @@ from tempfile import mkstemp
 import json
 import os
 import subprocess
+import toml
 
 app = Flask(__name__)
 rebuild_queue = queue.PriorityQueue()
@@ -70,6 +71,18 @@ def put_settings():
         replace_file_contents(get_state_path(), state_json)
     rebuild(priority=5, args=[])
     return '', 200
+
+
+def hosted_happs():
+    conductor_config = toml.load('/var/lib/holochain-conductor/conductor-config.toml')
+    [dna for dna in conductor_config['dnas'] if dna['holo-hosted']]
+
+
+@app.route('/hosted_happs', methods=['GET'])
+def get_hosted_happs():
+    return jsonify({
+        'hosted_happs': hosted_happs()
+    })
 
 
 def zerotier_info():
