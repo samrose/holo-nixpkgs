@@ -38,7 +38,6 @@ let
   };
 
   hostedDnas = with dnaPackages; [
-    # DO NOT place any DNAs here until you see this WARNING
     # list holo hosted DNAs here
     #{
     #  drv = hosted-holofuel;
@@ -60,7 +59,7 @@ let
     id = drv.name;
     holo-hosted = false;
     storage = {
-      path = "${conductorHome}/${drv.name}-${pkgs.dnaHash drv}";
+      path = "${conductorHome}/${pkgs.dnaHash drv}";
       type = "lmdb";
     };
   };
