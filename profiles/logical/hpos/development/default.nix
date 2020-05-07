@@ -1,5 +1,5 @@
 {
   imports = [ ../. ];
 
-  environment.variables.HPOS_DEVELOPMENT_MODE = true;
+  environment.variables.HPOS_DEVELOPMENT_MODE = "true";
 }
