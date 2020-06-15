@@ -1,5 +1,7 @@
+# TODO: remove this once switch to modules/profiles/* is complete
+
 {
   imports = [ ../. ];
 
-  environment.variables.HPOS_DEVELOPMENT_MODE = "true";
+  profiles.development.enable = true;
 }

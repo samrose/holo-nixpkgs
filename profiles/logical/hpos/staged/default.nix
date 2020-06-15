@@ -1,11 +1,10 @@
-{ config, lib, pkgs, ... }:
-
-with pkgs;
+# TODO: remove this once switch to modules/profiles/* is complete
 
 {
   imports = [ ../. ];
 
-  services.openssh.enable = true;
-
-  users.users.root.openssh.authorizedKeys.keyFiles = [ ./authorized_keys ];
+  profiles.development = {
+    enable = true;
+    features.ssh.enable = true;
+  };
 }
