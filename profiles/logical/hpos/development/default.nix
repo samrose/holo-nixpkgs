@@ -3,5 +3,8 @@
 {
   imports = [ ../. ];
 
-  profiles.development.enable = true;
+  profiles.development = {
+    enable = true;
+    features.overrideConductorConfig = true;
+  };
 }
