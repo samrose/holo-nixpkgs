@@ -104,6 +104,14 @@ def upgrade():
     return '', 200
 
 
+@app.route('/reset', methods=['POST'])
+def reset():
+    try:
+        subprocess.run(['hpos-reset'], check=True)
+    except CalledProcessError:
+        return '', 400
+
+
 def unix_socket(path):
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     if os.path.exists(path):
