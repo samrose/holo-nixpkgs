@@ -77,6 +77,9 @@ def hosted_happs():
     conductor_config = toml.load('/var/lib/holochain-conductor/conductor-config.toml')
     [dna for dna in conductor_config['dnas'] if dna['holo-hosted']]
 
+def hosted_instances():
+    conductor_config = toml.load('/var/lib/holochain-conductor/conductor-config.toml')
+    [instance for instance in conductor_config['instances'] if instance['holo-hosted']]
 
 @app.route('/hosted_happs', methods=['GET'])
 def get_hosted_happs():
