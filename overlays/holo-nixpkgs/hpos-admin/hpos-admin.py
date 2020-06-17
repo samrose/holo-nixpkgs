@@ -75,16 +75,30 @@ def put_settings():
 
 def hosted_happs():
     conductor_config = toml.load('/var/lib/holochain-conductor/conductor-config.toml')
-    [dna for dna in conductor_config['dnas'] if dna['holo-hosted']]
+    return [dna for dna in conductor_config['dnas'] if dna['holo-hosted']]
+
 
 def hosted_instances():
     conductor_config = toml.load('/var/lib/holochain-conductor/conductor-config.toml')
-    [instance for instance in conductor_config['instances'] if instance['holo-hosted']]
+    return [instance for instance in conductor_config['instances'] if instance['holo-hosted']]
+
 
 @app.route('/hosted_happs', methods=['GET'])
 def get_hosted_happs():
+
+    hosted_happs_list = hosted_happs()
+    hosted_instances_list = hosted_instances()
+    
+    if len(hosted_happs_list) > 0:
+        for hosted_happ in hosted_happs_list:
+            if len(hosted_instances_list) > 0:
+                num_instances = sum(hosted_happ['id'] == hosted_instance['id'] for hosted_instance in hosted_instances_list)
+            else: 
+                num_instances = 0
+            hosted_happ['number_instances'] = num_instances
+
     return jsonify({
-        'hosted_happs': hosted_happs()
+        'hosted_happs': hosted_happs_list
     })
 
 
