@@ -109,7 +109,7 @@ def reset():
     try:
         subprocess.run(['hpos-reset'], check=True)
     except CalledProcessError:
-        return '', 400
+        return '', 500
 
 
 def unix_socket(path):
