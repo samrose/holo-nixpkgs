@@ -49,7 +49,13 @@ def put_settings(ctx, k, v):
 @cli.command(help='Get HoloPortOS status data')
 @click.pass_context
 def get_status(ctx):
-    print(request(params, 'GET', '/status').json())
+    print(request(ctx, 'GET', '/status').json())
+
+
+@cli.command(help='Get info on happs currently hosted')
+@click.pass_context
+def get_hosted_happs(ctx):
+    print(request(ctx, 'GET', '/hosted_happs').json())
 
 
 if __name__ == '__main__':
