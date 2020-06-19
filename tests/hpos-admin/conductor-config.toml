@@ -15,14 +15,14 @@ holo-hosted = true
 happ-url = 'www.test1.com'
 
 [[dnas]]
-file = 'bridge/callee.dna'
+file = 'bridge/callee.dna.json'
 hash = 'QmQ6zcwmVkcJ56A8aT7ptrJSDUsdwi7gt2KFtxJzQLzDX3'
-id = 'bridge-callee'
+id = 'QmQ6zcwmVkcJ56A8aT7ptrJSDUsdwi7gt2KFtxJzQLzDX3'
 holo-hosted = true
 happ-url = 'www.test2.com'
 
 [[dnas]]
-file = 'bridge/caller.dna'
+file = 'bridge/caller.dna.json'
 hash = 'QmWA2iEi5DkKSkDS83dAmtMYCYRy7iNPnxcNH3FM3c9whQ'
 id = 'bridge-caller'
 holo-hosted = false
