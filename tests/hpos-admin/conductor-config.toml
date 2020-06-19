@@ -72,3 +72,12 @@ holo-hosted = false
 
 [instances.storage]
 type = 'memory'
+
+[[instances]]
+agent = 'test-agent-2'
+dna = 'QmWA2iEi5DkKSkDS83dAmtMYCYRy7iNPnxcNH3FM3c9whQ'
+id = 'QmWA2iEi5DkKSkDS83dAmtMYCYRy7iNPnxcNH3FM3c9whQ'
+holo-hosted = false
+
+[instances.storage]
+type = 'memory'
