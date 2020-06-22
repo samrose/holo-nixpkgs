@@ -53,18 +53,25 @@ in
     };
   };
 
-  config = mkIf cfg.enable (mkMerge [
-    (mkIf cfg.features.overrideConductorConfig {
-      environment.variables.HPOS_OVERRIDE_CONDUCTOR_CONFIG = "true";
-    })
+  config = mkIf cfg.enable (
+    mkMerge [
+      (
+        mkIf cfg.features.overrideConductorConfig {
+          environment.variables.HPOS_OVERRIDE_CONDUCTOR_CONFIG = "true";
+        }
+      )
 
-    (with cfg.features.ssh; mkIf enable {
-      services.openssh.enable = true;
+      (
+        mkIf cfg.features.ssh.enable {
+          services.openssh.enable = true;
 
-      users.users.root.openssh.authorizedKeys = with access; {
-        inherit keys;
-        keyFiles = mkIf holoCentral [ ../staged/authorized_keys ];
-      };
-    })
-  ]);
+          users.users.root.openssh.authorizedKeys =
+            with cfg.features.ssh.access; {
+              inherit keys;
+              keyFiles = mkIf holoCentral [ ../staged/authorized_keys ];
+            };
+        }
+      )
+    ]
+  );
 }
