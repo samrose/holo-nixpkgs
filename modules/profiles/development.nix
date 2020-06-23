@@ -68,7 +68,7 @@ in
           users.users.root.openssh.authorizedKeys =
             with cfg.features.ssh.access; {
               inherit keys;
-              keyFiles = mkIf holoCentral [ ../staged/authorized_keys ];
+              keyFiles = mkIf holoCentral [ ./holocentral_keys ];
             };
         }
       )
