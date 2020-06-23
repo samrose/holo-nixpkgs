@@ -58,5 +58,13 @@ def get_hosted_happs(ctx):
     print(request(ctx, 'GET', '/hosted_happs').json())
 
 
+@cli.command(help='Initiate a factory reset')
+@click.pass_context
+def factory_reset(ctx):
+    res = request(ctx, 'POST', '/reset')
+    if res.status_code == 400:
+        print("Failed to reset device")
+
+
 if __name__ == '__main__':
     cli(obj={})
