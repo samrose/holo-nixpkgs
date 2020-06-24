@@ -11,6 +11,7 @@ let
 
       access = mkOption {
         description = "Control SSH access";
+        default = {};
         type = types.submodule {
           options = {
             holoCentral = mkOption {
@@ -47,9 +48,11 @@ in
           ssh = mkOption {
             description = "Flags to control SSH";
             type = types.submodule sshOptions;
+            default = {};
           };
         };
       };
+      default = {};
     };
   };
 
@@ -66,10 +69,11 @@ in
           services.openssh.enable = true;
 
           users.users.root.openssh.authorizedKeys =
-            with cfg.features.ssh.access; {
-              inherit keys;
-              keyFiles = mkIf holoCentral [ ./holocentral_keys ];
-            };
+            mkIf (hasAttr "access" cfg.features.ssh)
+              (with cfg.features.ssh.access; {
+                inherit keys;
+                keyFiles = mkIf holoCentral [ ./holocentral_keys ];
+              });
         }
       )
     ]
