@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import toml
+import requests
 
 app = Flask(__name__)
 rebuild_queue = queue.PriorityQueue()
@@ -102,6 +103,35 @@ def get_hosted_happs():
     })
 
 
+def hydra_channel():
+    with open('/root/.nix-channels') as f:
+        channel_url = f.read()
+    return channel_url.split('/')[6]
+
+
+def hydra_revision():
+    channel = hydra_channel()
+    eval_url = 'https://hydra.holo.host/jobset/holo-nixpkgs/' + channel + '/latest-eval'
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    try:
+        eval_summary = requests.get(eval_url, headers=headers).json()
+        return eval_summary['jobsetevalinputs']['holo-nixpkgs']['revision']
+    except:
+        return 'error fetching channel holo-nixpkgs revision'
+
+
+def local_revision():
+    try:
+        with open('/root/.nix-revision') as f:
+            local_revision = f.read()
+    except:
+        local_revision = 'unversioned'
+    return local_revision
+
+
 def zerotier_info():
     proc = subprocess.run(['zerotier-cli', '-j', 'info'],
                           capture_output=True, check=True)
@@ -111,6 +141,15 @@ def zerotier_info():
 @app.route('/status', methods=['GET'])
 def status():
     return jsonify({
+        'holo_nixpkgs':{
+            'channel': {
+                'name': hydra_channel(),
+                'rev': hydra_revision()
+            },
+            'current_system': {
+                'rev': local_revision()
+            }
+        },
         'zerotier': zerotier_info()
     })
 
