@@ -116,11 +116,8 @@ def hydra_revision():
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
-    try:
-        eval_summary = requests.get(eval_url, headers=headers).json()
-        return eval_summary['jobsetevalinputs']['holo-nixpkgs']['revision']
-    except:
-        return 'error fetching channel holo-nixpkgs revision'
+    eval_summary = requests.get(eval_url, headers=headers).json()
+    return eval_summary['jobsetevalinputs']['holo-nixpkgs']['revision']
 
 
 def local_revision():
