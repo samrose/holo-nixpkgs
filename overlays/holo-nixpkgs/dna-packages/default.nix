@@ -19,8 +19,8 @@ let
   holo-hosting-app = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "holo-hosting-app";
-    rev = "37013a19c4f2546304e2abea6951e2e06863fcbc";
-    sha256 = "1i43k1wwcpmvx60db2kvbsvfihkfy2nn6iqqwcxz00gqm6pihr2q";
+    rev = "465c36aaf6692d39d4e4677a88f2900bed68f550";
+    sha256 = "0k4wpp92nydzi0yxckwka01psx4hlz551z4xc9y5x9yfwk6idmk7";
   };
 
   servicelogger = fetchFromGitHub {
