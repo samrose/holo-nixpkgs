@@ -49,8 +49,8 @@ let
   hp-admin = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "hp-admin";
-    rev = "8d46c49dd742bfd8f45590fa5bf882fd120d6d76";
-    sha256 = "16h52858d7glscqpc0vyd9f1shi8z7b65vgqv4ascg58gjx68pvl";
+    rev = "2ed925d5d66a91d40e6618b525cf3fa7cf3d0433";
+    sha256 = "1d1svyya665zd2qm6wpzzzhl03hqbg6mzqpaq8bmh48w76fm0l9w";
   };
 
   hp-admin-crypto = fetchFromGitHub {
@@ -253,7 +253,7 @@ in
   };
 
   hpos-reset = writeShellScriptBin "hpos-reset" ''
-    rm -rf /var 
+    rm -rf /var
     reboot
   '';
 

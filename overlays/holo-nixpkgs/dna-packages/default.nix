@@ -6,28 +6,28 @@ let
   happ-store = fetchFromGitHub {
     owner = "holochain";
     repo = "happ-store";
-    rev = "a7feb1f701753da2b0b3c1de9d6bc1c13896782b";
-    sha256 = "17d94cwk4xgf6i2xx50bxyk1bq68dc1ps4hi9wjy7f1c2qclgfdy";
+    rev = "b19aaa63a57dc78a6a37c802358cd46e746acccc";
+    sha256 = "1kqjdags3ja7pll6j88d38k3xckbdijsdhkwa87kzc15js247z2b";
   };
 
   holofuel = fetchurl {
-    url = "https://holo-host.github.io/holofuel/releases/download/v0.20.1/holofuel.dna.json";
+    url = "https://holo-host.github.io/holofuel/releases/download/v0.21.3-alpha10/holofuel.dna.json";
     name = "holofuel.dna.json";
-    sha256 = "159g4d0fhmb4kfi7v4ndizamj6ajfmxxv57ylzkr9q8sdyjb5l8i";
+    sha256 = "07ckcai3hbrl352j2bx5p2ikn48fpb222br8s8lm8rdz5ls9xva2";
   };
 
   holo-hosting-app = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "holo-hosting-app";
-    rev = "37013a19c4f2546304e2abea6951e2e06863fcbc";
-    sha256 = "1i43k1wwcpmvx60db2kvbsvfihkfy2nn6iqqwcxz00gqm6pihr2q";
+    rev = "465c36aaf6692d39d4e4677a88f2900bed68f550";
+    sha256 = "0k4wpp92nydzi0yxckwka01psx4hlz551z4xc9y5x9yfwk6idmk7";
   };
 
   servicelogger = fetchFromGitHub {
     owner = "Holo-Host";
     repo = "servicelogger";
-    rev = "33fa8304ea00284b73f454d05d61817db53e2869";
-    sha256 = "0b5whd5hgh7zdgf9ppw7z4691ypw5qqim7cv1nx1hqhiyxy8cimh";
+    rev = "cec85833a769b05c378353cc5b679f9bc479ef61";
+    sha256 = "0dyn4plmkxg1q6p0ccrjr35sc26rg0p7dvifdipksggbfi0ypml0";
   };
 in
 
