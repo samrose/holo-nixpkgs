@@ -12,6 +12,10 @@ import requests
 import asyncio
 import websockets
 
+
+PROFILES_TOML_PATH = '/etc/nixos/hpos-admin-features.toml'
+
+
 app = Flask(__name__)
 rebuild_queue = queue.PriorityQueue()
 state_lock = lock.Semaphore()
