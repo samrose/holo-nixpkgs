@@ -15,7 +15,7 @@ echo 'Switching HoloPort to channel:' $1
 nix-channel --add https://hydra.holo.host/channel/custom/holo-nixpkgs/$1/holo-nixpkgs
 nix-channel --update
 
-update = $(nixos-rebuild switch) 
+update=$(nixos-rebuild switch 2>&1)
 
 if echo $update | grep -q "using cached result"; then
     echo "Unable to update and using cached result"
