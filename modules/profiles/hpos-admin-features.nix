@@ -34,14 +34,6 @@ in
   };
 
   config = mkIf cfg.enable {
-    systemd.paths.hpos-admin-features-rebuild = {
-      wantedBy = [ "multi-user.target" ];
-      pathConfig = {
-        PathModified = cfg.tomlPath;
-        Unit = "nixos-rebuild.service";
-      };
-    };
-
     profiles = if (builtins.pathExists cfg.tomlPath) then
       builtins.fromTOML (builtins.readFile cfg.tomlPath)
       else {};
