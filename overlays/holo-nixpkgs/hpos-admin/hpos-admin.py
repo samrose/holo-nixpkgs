@@ -243,7 +243,7 @@ def status():
 @app.route('/upgrade', methods=['POST'])
 def upgrade():
     # FIXME: calling nixos-rebuild fails
-    # rebuild_upgrade(priority=1, args=['--upgrade'])
+    # rebuild(priority=1, args=['--upgrade'])
     return '', 503 # service unavailable
 
 
