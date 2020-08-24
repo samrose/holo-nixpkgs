@@ -15,7 +15,7 @@ import asyncio
 import websockets
 
 
-PROFILES_TOML_PATH = '/etc/nixos/hp-admin-features.toml'
+PROFILES_TOML_PATH = '/etc/nixos/hpos-admin-features.toml'
 
 
 app = Flask(__name__)
