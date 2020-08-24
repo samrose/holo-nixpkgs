@@ -94,7 +94,8 @@ def read_profiles():
 
 
 def write_profiles(profiles):
-    toml.dump(profiles, PROFILES_TOML_PATH)
+    with open(PROFILES_TOML_PATH, 'w') as f:
+        f.write(toml.dumps(profiles))
 
 
 def set_feature_state(profile, feature, enable = True):
