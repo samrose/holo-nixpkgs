@@ -20,6 +20,8 @@ in
     systemd.services.hp-admin-crypto-server = {
       wantedBy = [ "multi-user.target" ];
 
+      environment.RUST_LOG = "info";
+
       serviceConfig.ExecStart = "${cfg.package}/bin/hp-admin-crypto-server";
     };
   };
